@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "root",
+    "password": "viewlead888",
+    "database": "test_nodeServer",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "logging": false
+  },
+  "test": {
+    "username": "root",
+    "password": "viewlead888",
+    "database": "test_nodeServer",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "logging": false
+  },
+  "production": {
+    "username": "root",
+    "password": "viewlead888",
+    "database": "test_nodeServer",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "logging": false
+  }
+}

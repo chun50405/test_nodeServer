@@ -1,0 +1,17 @@
+{
+  "common": {
+
+  },
+  "development": {
+    "port": "5679",
+    "hostname": "https://localhost",
+    "useHttps": true,
+    "httpsConfig": {
+      "certDir": "../devCert",
+      "key": "server-key.pem",
+      "cert": "server-cert.pem",
+      "ca": ["fullchain.crt"],
+      "socketIoCa": []
+    }
+  }
+}

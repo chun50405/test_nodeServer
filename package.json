@@ -1,0 +1,32 @@
+{
+	"name": "test_nodeServer",
+	"version": "1.0.0",
+	"main": "index.js",
+	"license": "MIT",
+	"private": true,
+	"bin": "./bin/www",
+	"scripts": {
+		"start": "node ./bin/www",
+		"dev": "webpack-dev-server --devtool eval --progress --colors --content-base build"
+	},
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"cheerio": "^1.0.0-rc.11",
+		"cookie-parser": "^1.4.6",
+		"cors": "^2.8.5",
+		"debug": "^4.3.4",
+		"express": "^4.18.1",
+		"formidable": "^2.0.1",
+		"lodash": "^4.17.21",
+		"morgan": "^1.10.0",
+		"mysql": "^2.18.1",
+		"mysql2": "^2.3.3",
+		"sequelize": "^6.19.0",
+		"sequelize-bcrypt": "^1.1.0",
+		"sequelize-fixtures": "^1.2.0",
+		"superagent": "^7.1.6"
+	},
+	"devDependencies": {
+		"sequelize-cli": "^6.4.1"
+	}
+}
