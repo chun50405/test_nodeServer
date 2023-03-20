@@ -7,6 +7,7 @@
 	"bin": "./bin/www",
 	"scripts": {
 		"start": "node ./bin/www",
+		"pm2Start": "pm2 start ./bin/www.js -i max",
 		"dev": "webpack-dev-server --devtool eval --progress --colors --content-base build"
 	},
 	"dependencies": {
@@ -21,6 +22,7 @@
 		"morgan": "^1.10.0",
 		"mysql": "^2.18.1",
 		"mysql2": "^2.3.3",
+		"pug": "^3.0.2",
 		"sequelize": "^6.19.0",
 		"sequelize-bcrypt": "^1.1.0",
 		"sequelize-fixtures": "^1.2.0",
