@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../models');
+const jwt = require('jsonwebtoken');
+const JWT_PASSWORD = 'wade'
 
 router.get('/test', (req, res, next) => {
 	res.json('/user/test')
@@ -33,7 +35,8 @@ router.post('/login', async (req, res, next) => {
 
 		if(user) {
 			if(user.authenticate(password)) {
-				res.json('登入成功');
+				let theToken = generateToken(user);
+				res.json({ theToken });
 			} else {
 				res.status(400).json('帳號或密碼錯誤')
 			}
@@ -60,4 +63,27 @@ router.get('/list', async (req, res, next) => {
 	}
 
 })
+
+
+
+function generateToken(user, expireDays){
+
+	let userForToken = user;
+	let expiresIn = 7.5 * 60 * 60;
+
+
+	if(expireDays){
+		expiresIn = expireDays * 24 * 60 * 60;
+	}
+
+
+	let token = jwt.sign({
+		user: user
+	}, JWT_PASSWORD, {
+		// expiresIn: expiresIn // in seconds
+		expiresIn: 30
+	});
+	return token;
+}
+
 module.exports = router;

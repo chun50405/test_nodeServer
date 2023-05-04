@@ -5,7 +5,8 @@ const superagent = require('superagent');
 const cheerio = require('cheerio');
 const twseUrl = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp";
 router.get('/test', (req, res, next) => {
-	res.json('test')
+	let random = Math.random()
+	res.json({message: 'test', random: random})
 })
 
 
