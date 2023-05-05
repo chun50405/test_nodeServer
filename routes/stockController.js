@@ -6,6 +6,7 @@ const cheerio = require('cheerio');
 const twseUrl = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp";
 router.get('/test', (req, res, next) => {
 	let random = Math.random()
+	console.log('req=', req.auth)
 	res.json({message: 'test', random: random})
 })
 

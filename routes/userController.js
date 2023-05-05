@@ -64,7 +64,12 @@ router.get('/list', async (req, res, next) => {
 
 })
 
+router.get('/refreshToken', async (req, res, next) => {
+	let user = req.auth.user;
 
+	let theToken = generateToken(user);
+	res.json({ theToken });
+})
 
 function generateToken(user, expireDays){
 
@@ -81,9 +86,11 @@ function generateToken(user, expireDays){
 		user: user
 	}, JWT_PASSWORD, {
 		// expiresIn: expiresIn // in seconds
-		expiresIn: 30
+		expiresIn: 10
 	});
 	return token;
 }
+
+
 
 module.exports = router;

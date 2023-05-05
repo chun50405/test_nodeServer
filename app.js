@@ -60,7 +60,7 @@ app.use(expressjwt({
       // if (new Date() - err.inner.expiredAt < 5000) { return;}
       throw err;
     },
-  }).unless({ path: [/^\/user\//] }));
+  }).unless({ path: ['/user/login'] }));
 
 
   app.use(function (err, req, res, next) {
