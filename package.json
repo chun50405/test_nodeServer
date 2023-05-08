@@ -32,6 +32,7 @@
 		"sequelize": "^6.19.0",
 		"sequelize-bcrypt": "^1.1.0",
 		"sequelize-fixtures": "^1.2.0",
+		"sib-api-v3-sdk": "^8.5.0",
 		"superagent": "^7.1.6"
 	},
 	"devDependencies": {

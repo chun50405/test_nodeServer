@@ -8,7 +8,8 @@ const startConfig = require('../config/startConfig')[env];
 
 const models = require('../models');
 const sequelize = models.sequelize;
-const fs = require('fs')
+const fs = require('fs');
+const crypto = require('crypto');
 const cluster = require('cluster');
 const os = require('os');
 
@@ -39,12 +40,13 @@ app.set('port', port);
          ca.push(fs.readFileSync(server_ca))
        }
      }
+
      server = require('https').createServer({
        key: fs.readFileSync(server_key),
        cert: fs.readFileSync(server_cert),
        // passphrase: HTTPS_CONFIG.passphrase,
-       // ca: ca,
-       // secureOptions: crypto.constants.SSL_OP_NO_TLSv1 | crypto.constants.SSL_OP_NO_TLSv1_1
+       ca: ca,
+       secureOptions: crypto.constants.SSL_OP_NO_TLSv1 | crypto.constants.SSL_OP_NO_TLSv1_1
      }, app);
      console.log('USE HTTPS');
    } else {
