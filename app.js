@@ -4,6 +4,7 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const { expressjwt: expressjwt } = require("express-jwt");
+const helmet = require("helmet");
 
 
 const fileController = require('./routes/fileController');
@@ -37,7 +38,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json({ limit: '100mb' }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(cookieParser());
-app.use(cors())
+app.use(cors());
+app.use(helmet());
 app.use(expressjwt({
     secret: "wade",
     algorithms: ["HS256"],

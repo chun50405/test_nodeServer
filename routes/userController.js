@@ -74,7 +74,7 @@ router.get('/refreshToken', async (req, res, next) => {
 function generateToken(user, expireDays){
 
 	let userForToken = user;
-	let expiresIn = 7.5 * 60 * 60;
+	let expiresIn = 15 * 60; // 15min
 
 
 	if(expireDays){
@@ -86,7 +86,7 @@ function generateToken(user, expireDays){
 		user: user
 	}, JWT_PASSWORD, {
 		// expiresIn: expiresIn // in seconds
-		expiresIn: 10
+		expiresIn: expiresIn
 	});
 	return token;
 }
