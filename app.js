@@ -62,7 +62,7 @@ app.use(expressjwt({
       // if (new Date() - err.inner.expiredAt < 5000) { return;}
       throw err;
     },
-  }).unless({ path: ['/user/login'] }));
+  }).unless({ path: ['/user/login', '/user/sendVerifyMail'] }));
 
 
   app.use(function (err, req, res, next) {

@@ -15,8 +15,20 @@ module.exports = (sequelize, dataTypes) => {
     password: {
       type: dataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
       comment: '加密後密碼'
+    },
+    eMail: {
+      type: dataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      comment: '電子郵件'
+    },
+    isVerified: {
+      type: dataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      comment: "是否經過驗證"
     }
   })
 
