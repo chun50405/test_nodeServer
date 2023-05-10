@@ -12,7 +12,7 @@ const userController = require('./routes/userController');
 const indexController = require('./routes/indexController');
 const stockController = require('./routes/stockController');
 const STARTCONFIG = require('./config/startConfig')["common"];
-
+const config_env = require('./config_env');
 // ----------------------- 固定會用的套件 S ----------------------- /
 const _ = require('lodash');
 
@@ -41,7 +41,7 @@ app.use(cookieParser());
 app.use(cors());
 app.use(helmet());
 app.use(expressjwt({
-    secret: "wade",
+    secret: config_env.JWT_SECRET,
     algorithms: ["HS256"],
     credentialsRequired: true,
     getToken: function fromHeaderOrQuerystring(req) {
@@ -62,7 +62,7 @@ app.use(expressjwt({
       // if (new Date() - err.inner.expiredAt < 5000) { return;}
       throw err;
     },
-  }).unless({ path: ['/user/login', '/user/sendVerifyMail'] }));
+  }).unless({ path: ['/user/login', '/user/sendVerifyMail', '/user/register'] }));
 
 
   app.use(function (err, req, res, next) {

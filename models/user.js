@@ -18,10 +18,10 @@ module.exports = (sequelize, dataTypes) => {
       unique: false,
       comment: '加密後密碼'
     },
-    eMail: {
+    email: {
       type: dataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: false,
       comment: '電子郵件'
     },
     isVerified: {
