@@ -4,6 +4,12 @@ const models = require('../models');
 const config_env = require('../config_env');
 const jwt = require('jsonwebtoken');
 const SibApiV3Sdk = require('sib-api-v3-sdk');
+const axios = require('axios');
+const { OAuth2Client } = require('google-auth-library');
+const GOOGLE_CLIENT_ID = config_env['GOOGLE_CLIENT_ID']
+const client = new OAuth2Client();
+
+
 let defaultClient = SibApiV3Sdk.ApiClient.instance;
 let apiKey = defaultClient.authentications['api-key'];
 apiKey.apiKey = config_env.SENDINBLUE_API_KEY;
@@ -58,6 +64,28 @@ router.post('/login', async (req, res, next) => {
 		console.log('e=', e)
 	 	res.status(500).send(e)
 	}
+})
+
+
+router.post('/loginByGoogle', async (req, res, next) => {
+	let body = req.body
+	let token = body.idToken
+
+	try {
+		let verifiedToken = await verifyGoogleIdToken(token);
+		if(verifiedToken) {
+			let theToken = generateToken(body);
+			res.json({ theToken });
+		} else {
+			throw new Error('Error verifying Google ID token');
+		}
+
+
+	} catch (e) {
+		console.log('/user/loginByGoogle fail', e)
+		res.status(500).send(e)
+	}
+
 })
 
 router.post('/register', async (req, res, next) => {
@@ -208,5 +236,33 @@ async function sendMail(token, mailTo) {
 		throw error
 	});
 }
+
+async function verifyGoogleIdToken(idToken) {
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: idToken,
+      audience: GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const userId = payload.sub;
+
+    console.log('User ID:', userId);
+    console.log('User Name:', payload.name);
+    console.log('User Email:', payload.email);
+
+    // 如果需要，您还可以进行其他检查
+    // 例如，检查'iss'（發行者）字段以確保令牌来自Google
+    if (payload.iss !== 'https://accounts.google.com') {
+      throw new Error('Invalid token: Issuer is not Google.');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error verifying Google ID token:', error.message);
+    return false;
+  }
+}
+
 
 module.exports = router;

@@ -20,53 +20,22 @@ const os = require('os');
 const port = normalizePort(process.env.PORT || '5679');
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
 
 
- if(startConfig.useHttps){
-   let HTTPS_CONFIG = startConfig.httpsConfig;
-   let path = require('path');
-   let certDir = HTTPS_CONFIG.certDir;
-   let ca = [];
-   let server_key = path.join(__dirname, certDir, HTTPS_CONFIG.key)
-   let server_cert = path.join(__dirname, certDir,HTTPS_CONFIG.cert)
-   if(fs.existsSync(server_key) && fs.existsSync(server_cert)) {
-     for(let idx in HTTPS_CONFIG.ca){
-       let caFile = HTTPS_CONFIG.ca[idx];
-       let server_ca = path.join(__dirname, certDir, caFile)
-       if(fs.existsSync(server_ca)) {
-         ca.push(fs.readFileSync(server_ca))
-       }
-     }
 
-     server = require('https').createServer({
-       key: fs.readFileSync(server_key),
-       cert: fs.readFileSync(server_cert),
-       // passphrase: HTTPS_CONFIG.passphrase,
-       ca: ca,
-       secureOptions: crypto.constants.SSL_OP_NO_TLSv1 | crypto.constants.SSL_OP_NO_TLSv1_1
-     }, app);
-     console.log('USE HTTPS');
-   } else {
-     console.log('no key & cert File')
-     server = require('http').createServer(app);
-   }
 
- }else{
-   server = require('http').createServer(app);
- }
 //
 if(cluster.isMaster) {
+  console.log(`Primary ${process.pid} is running`);
   // Fork workers.
-  for (let i = 0; i < os.cpus().length; i++) {
+  for (let i = 0; i < 4; i++) {
     cluster.fork();
   }
   cluster.on('exit', (worker, code, signal) => {
     console.log(`worker ${worker.process.pid} died`);
     cluster.fork();
   });
+
 
   sequelize.sync({force: false })
   .then(function(){
@@ -77,35 +46,55 @@ if(cluster.isMaster) {
     console.log('error=', error)
   })
 } else {
-  server.listen(port, function() {
-   debug('Express server listening on port ' + server.address().port);
-  });
+  createServer();
+
+  console.log(`Worker ${process.pid} started`);
 }
 
-
-
-
 /**
- * Listen on provided port, on all network interfaces.
+ * Create HTTP server.
  */
-// ******************************** 手動新增 S ************************************
-// sequelize.sync({force: false })
-// .then(function(){
-//  console.log('testServer port =', port)
-//  console.log('Sequelize table create ok!')
-//
-//  server.listen(port, function() {
-//   debug('Express server listening on port ' + server.address().port);
-//  });
-// })
-// .catch((error) => {
-//   console.log('error=', error)
-// })
-// ******************************** 手動新增 E ************************************
+function createServer() {
+  if(startConfig.useHttps){
+    let HTTPS_CONFIG = startConfig.httpsConfig;
+    let path = require('path');
+    let certDir = HTTPS_CONFIG.certDir;
+    let ca = [];
+    let server_key = path.join(__dirname, certDir, HTTPS_CONFIG.key)
+    let server_cert = path.join(__dirname, certDir,HTTPS_CONFIG.cert)
+    if(fs.existsSync(server_key) && fs.existsSync(server_cert)) {
+      for(let idx in HTTPS_CONFIG.ca){
+        let caFile = HTTPS_CONFIG.ca[idx];
+        let server_ca = path.join(__dirname, certDir, caFile)
+        if(fs.existsSync(server_ca)) {
+          ca.push(fs.readFileSync(server_ca))
+        }
+      }
 
-//server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+      server = require('https').createServer({
+        key: fs.readFileSync(server_key),
+        cert: fs.readFileSync(server_cert),
+        // passphrase: HTTPS_CONFIG.passphrase,
+        ca: ca,
+        secureOptions: crypto.constants.SSL_OP_NO_TLSv1 | crypto.constants.SSL_OP_NO_TLSv1_1
+      }, app);
+      console.log('USE HTTPS');
+    } else {
+      console.log('no key & cert File')
+      server = require('http').createServer(app);
+    }
+
+  }else{
+    server = require('http').createServer(app);
+  }
+
+  /**
+   * Listen on provided port, on all network interfaces.
+   */
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+}
 
 /**
  * Normalize a port into a number, string, or false.

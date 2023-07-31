@@ -39,7 +39,21 @@ app.use(bodyParser.json({ limit: '100mb' }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
 app.use(cookieParser());
 app.use(cors());
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc:["'self'", "'unsafe-inline'", "https://accounts.google.com/gsi/style"],
+      frameSrc: ["'self'", "https://accounts.google.com/gsi/ "],
+      scriptSrc: ["'self'", "https://accounts.google.com/gsi/client"],
+      scriptSrcAttr: ["'self'", "'unsafe-inline'"],
+      connectSrc: ["'self'", "https://accounts.google.com/gsi/"]
+    }
+  },
+  crossOriginResourcePolicy: false
+}));
+app.use(express.static(path.join(__dirname, 'my-angular-test')));
+
 app.use(expressjwt({
     secret: config_env.JWT_SECRET,
     algorithms: ["HS256"],
@@ -62,12 +76,13 @@ app.use(expressjwt({
       // if (new Date() - err.inner.expiredAt < 5000) { return;}
       throw err;
     },
-  }).unless({ path: ['/user/login', '/user/sendVerifyMail', '/user/register'] }));
+  }).unless({ path: ['/user/login', '/user/loginByGoogle', '/user/sendVerifyMail', '/user/register', '/ipaDownload'] }));
 
 
   app.use(function (err, req, res, next) {
     if (err.name === "UnauthorizedError") {
-      res.status(401).send("invalid token...");
+      // res.status(401).send("invalid token...");
+      return res.redirect("/"); // 這裡 "/login" 是您想要導向的 URL
     } else {
       next(err);
     }
