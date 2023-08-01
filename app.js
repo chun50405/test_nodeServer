@@ -50,7 +50,11 @@ app.use(helmet({
       connectSrc: ["'self'", "https://accounts.google.com/gsi/"]
     }
   },
-  crossOriginResourcePolicy: false
+  referrerPolicy: {
+      policy: "strict-origin-when-cross-origin",
+  },
+  crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+  crossOriginResourcePolicy: { policy: "same-site" },
 }));
 app.use(express.static(path.join(__dirname, 'my-angular-test')));
 
