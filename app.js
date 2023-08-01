@@ -5,7 +5,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const { expressjwt: expressjwt } = require("express-jwt");
 const helmet = require("helmet");
-
+const axios = require('axios');
+const fs = require('fs');
 
 const fileController = require('./routes/fileController');
 const userController = require('./routes/userController');
@@ -13,6 +14,7 @@ const indexController = require('./routes/indexController');
 const stockController = require('./routes/stockController');
 const STARTCONFIG = require('./config/startConfig')["common"];
 const config_env = require('./config_env');
+const fullPath = path.join(__dirname,config_env.ANGULAR_APP_PATH);
 // ----------------------- 固定會用的套件 S ----------------------- /
 const _ = require('lodash');
 
@@ -37,6 +39,11 @@ const cors = require('cors');
 app.use(logger('dev'));
 app.use(bodyParser.json({ limit: '100mb' }));
 app.use(bodyParser.urlencoded({ limit: '100mb', extended: true }));
+//部署 Angular 專案
+if (fs.existsSync(fullPath)) {
+  // 在這裡提供靜態檔案
+  app.use("/app", express.static(fullPath));
+}
 app.use(cookieParser());
 app.use(cors());
 app.use(helmet({
@@ -56,8 +63,6 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
   crossOriginResourcePolicy: { policy: "same-site" },
 }));
-app.use(express.static(path.join(__dirname, 'my-angular-test')));
-
 app.use(expressjwt({
     secret: config_env.JWT_SECRET,
     algorithms: ["HS256"],
@@ -80,22 +85,48 @@ app.use(expressjwt({
       // if (new Date() - err.inner.expiredAt < 5000) { return;}
       throw err;
     },
-  }).unless({ path: ['/user/login', '/user/loginByGoogle', '/user/sendVerifyMail', '/user/register', '/ipaDownload'] }));
+  }).unless({ path: ['/',/^\/app\?*/,'/user/login', '/user/loginByGoogle', '/user/sendVerifyMail', '/user/register', '/ipaDownload'] }));
 
+app.use(function (err, req, res, next) {
+  console.error(err);
+  if (err.name === "UnauthorizedError") {
+    res.status(401).send("invalid token...");
+  } else {
+    next(err);
+  }
+});
 
-  app.use(function (err, req, res, next) {
-    if (err.name === "UnauthorizedError") {
-      // res.status(401).send("invalid token...");
-      return res.redirect("/"); // 這裡 "/login" 是您想要導向的 URL
-    } else {
-      next(err);
-    }
-  });
-
+app.use('/', indexController);
 app.use('/file', fileController);
 app.use('/user', userController);
-app.use('/', indexController);
 app.use('/stock', stockController);
+
+// const twseUrl = "https://mis.twse.com.tw";
+// const twseOpenAIUrl = "https://openapi.twse.com.tw";
+// app.get('/stock/api/getStockInfo.jsp', async (req, res, next) => {
+//   let query = req.query
+//
+//     try {
+//       const response = await axios.get(`${twseUrl}/stock/api/getStockInfo.jsp`, {
+//         params: query
+//       });
+//       // console.log('response=', response)
+//       res.send(response.data)
+//     } catch (error) {
+//       console.error(error);
+//       res.status(400).send(error)
+//
+//     }
+// })
+
+
+//Angular 專案 開頭的 /app都回傳 index.html
+app.get('/app/*', (req, res) => {
+  if (fs.existsSync(fullPath)) {
+    res.sendFile(path.resolve(fullPath, 'index.html'));
+  }
+});
+
 
 
 
@@ -106,6 +137,10 @@ app.use(function(req, res, next) {
   err.status = 404;
   next(err);
 });
+
+
+
+
 
 // error handler
 app.use(function(err, req, res, next) {

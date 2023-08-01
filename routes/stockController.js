@@ -3,7 +3,8 @@ const router = express.Router();
 const fs = require('fs/promises');
 const superagent = require('superagent');
 const cheerio = require('cheerio');
-const twseUrl = "https://mis.twse.com.tw/stock/api/getStockInfo.jsp";
+const twseUrl = "https://mis.twse.com.tw";
+const twseOpenAIUrl = "https://openapi.twse.com.tw";
 router.get('/test', (req, res, next) => {
 	let random = Math.random()
 	console.log('req=', req.auth)
@@ -63,5 +64,8 @@ router.put('/editStockGroup', async (req, res, next) => {
 		res.status(500).send(e);
 	}
 })
+
+
+
 
 module.exports = router;

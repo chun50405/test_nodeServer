@@ -179,10 +179,16 @@ router.get('/list', async (req, res, next) => {
 })
 
 router.get('/refreshToken', async (req, res, next) => {
-	let user = req.auth.user;
+	try {
+		let user = req.auth.user;
 
-	let theToken = generateToken(user);
-	res.json({ theToken });
+		let theToken = generateToken(user);
+		res.json({ theToken });
+	} catch (error) {
+		console.error(error)
+		res.status(500).send(error)
+	}
+
 })
 
 function generateToken(user, expireDays){
