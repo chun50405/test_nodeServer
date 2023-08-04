@@ -194,7 +194,7 @@ router.get('/refreshToken', async (req, res, next) => {
 function generateToken(user, expireDays){
 
 	let userForToken = user;
-	let expiresIn = 15 * 60; // 15min
+	let expiresIn = 60 * 60 * 12; // 12 hours
 
 
 	if(expireDays){

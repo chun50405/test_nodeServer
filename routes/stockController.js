@@ -20,20 +20,40 @@ router.get('/news', async (req, res, next) => {
 		const $ = cheerio.load(result.text)
 		const data = []
 
-		$('div[class="_2bFl theme-list"] div[style="height:70px;"]').each((i, elem) => {
+		$('div[class="_2bFl theme-list"] div[style="height:70px;"]').each( (i, elem) => {
 			const title = $(elem).children('a').attr('title')
 			const href = $(elem).children('a').attr('href')
+			const url = 'https://news.cnyes.com' + href
 			const ahtml = $(elem).children('a').html();
 			const time = $(ahtml).children('time').text()
 			const subTitle = $(ahtml).children('.theme-sub-cat').text()
-			data.push({title: title, time: time, subTitle: subTitle, url: 'https://news.cnyes.com' + href})
+			const image = $(ahtml).children('figure').children('img').attr('src');
+			data.push({title: title, time: time, subTitle: subTitle, url: url, image: image})
 		})
 		res.json(data)
 	} catch (e) {
-		console.log('e=',e)
+		console.log('/news error =>',e)
 		res.status(500).json(e)
 	}
 })
+
+router.get('/newsContent', async (req, res, next) => {
+	let query = req.query
+	let url = query.url
+	try {
+    const result = await superagent.get(url);
+    const $ = cheerio.load(result.text);
+
+		const article = $('article').text();
+
+    res.send({content: article})
+  } catch (e) {
+    console.log('/newContent error =>', e);
+    res.status(500).send(e)
+  }
+})
+
+
 
 router.get('/getStockGroup', async (req, res, next) => {
 	try {
