@@ -45,7 +45,7 @@ router.post('/login', async (req, res, next) => {
 
 		if(user) {
 			if(user.isVerified === false) {
-				res.status(400).send({message: '帳號尚未通過認證'})
+				res.status(400).send({message: '帳號尚未通過認證', isVerified: false, email: user.email, account: user.account,token: generateToken(user)})
 			} else {
 				if(user.authenticate(password)) {
 					let theToken = generateToken(user);
@@ -163,6 +163,22 @@ router.post('/sendVerifyMail', async (req, res, next) => {
 		res.status(500).send(error)
 
 	});
+})
+
+router.post('/reSendVerifyMail', async (req, res, next) => {
+	let body = req.body
+	let token = body.token
+	let mailTo = {
+		email: body.email,
+		name: body.account
+	}
+	try {
+		await sendMail(token, mailTo)		
+		res.send({message: "已寄出認證信件"})
+	} catch (error) {
+		res.status(500).send(error)
+	}
+	
 })
 
 router.get('/list', async (req, res, next) => {

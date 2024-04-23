@@ -18,18 +18,28 @@ router.get('/news', async (req, res, next) => {
 	try {
 		const result = await superagent.get(newsUrl)
 		const $ = cheerio.load(result.text)
+		// console.log('$$$$$', $.root().html())
 		const data = []
-
-		$('div[class="_2bFl theme-list"] div[style="height:70px;"]').each( (i, elem) => {
-			const title = $(elem).children('a').attr('title')
-			const href = $(elem).children('a').attr('href')
+		$('p.list-title').each((i, elem) => {
+			// console.log(i, elem)
+			
+			const title = $(elem).children('a').attr('title');
+			const href = $(elem).children('a').attr('href');
 			const url = 'https://news.cnyes.com' + href
-			const ahtml = $(elem).children('a').html();
-			const time = $(ahtml).children('time').text()
-			const subTitle = $(ahtml).children('.theme-sub-cat').text()
-			const image = $(ahtml).children('figure').children('img').attr('src');
-			data.push({title: title, time: time, subTitle: subTitle, url: url, image: image})
+			data.push({title: title, url: url})
 		})
+		// $('div[class="_2bFl theme-list"] div[style="height:70px;"]').each( (i, elem) => {
+		// 	console.log('i, elem=>', i, elem)
+		// 	const title = $(elem).children('a').attr('title')
+		// 	const href = $(elem).children('a').attr('href')
+		// 	const url = 'https://news.cnyes.com' + href
+		// 	const ahtml = $(elem).children('a').html();
+		// 	const time = $(ahtml).children('time').text()
+		// 	const subTitle = $(ahtml).children('.theme-sub-cat').text()
+		// 	const image = $(ahtml).children('figure').children('img').attr('src');
+		// 	console.log({title: title, time: time, subTitle: subTitle, url: url, image: image})
+		// 	data.push({title: title, time: time, subTitle: subTitle, url: url, image: image})
+		// })
 		res.json(data)
 	} catch (e) {
 		console.log('/news error =>',e)

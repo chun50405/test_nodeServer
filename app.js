@@ -85,7 +85,7 @@ app.use(expressjwt({
       // if (new Date() - err.inner.expiredAt < 5000) { return;}
       throw err;
     },
-  }).unless({ path: ['/',/^\/app\?*/,'/user/login', '/user/loginByGoogle', '/user/sendVerifyMail', '/user/register', '/ipaDownload'] }));
+  }).unless({ path: ['/',/^\/app\?*/,'/user/login', '/user/loginByGoogle', '/user/sendVerifyMail', '/user/reSendVerifyMail', '/user/register', '/ipaDownload'] }));
 
 app.use(function (err, req, res, next) {
   console.error(err);
